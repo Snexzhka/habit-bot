@@ -26,8 +26,6 @@
 
 ### 1. Клонировать репозиторий
 - ```bash
-
-
 - git clone https://https://github.com/Snexzhka/habit-bot.git
 - cd habit-bot
 
