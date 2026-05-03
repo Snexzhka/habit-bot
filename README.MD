@@ -95,17 +95,17 @@
 ##  Структура проекта
 
 .
-├── src/
-│   ├── backend/           # FastAPI app, models, routers, database
-│   ├── frontend/          # Telegram bot handlers, keyboards
-│   ├── utils/             # JWT, password hashing
-│   └── main.py            # точка входа FastAPI + lifespan с ботом
-├── alembic/               # миграции
-├── docker-compose.yml
-├── Dockerfile
-├── requirements.txt
-├── .env.example
-└── README.md
+- ├── src/
+- │   ├── backend/           # FastAPI app, models, routers, database
+- │   ├── frontend/          # Telegram bot handlers, keyboards
+- │   ├── utils/             # JWT, password hashing
+- │   └── main.py            # точка входа FastAPI + lifespan с ботом
+- ├── alembic/               # миграции
+- ├── docker-compose.yml
+- ├── Dockerfile
+- ├── requirements.txt
+- ├── .env.example
+- └── README.md
 
 
 ##### Автор
