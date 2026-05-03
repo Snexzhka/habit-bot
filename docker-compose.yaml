@@ -1,0 +1,70 @@
+services:
+  db:
+    container_name: bas
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - my_network
+
+  api:
+    container_name: api
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      host_db: db
+      port_db: 5432
+      user_db: ${POSTGRES_USER}
+      password_db: ${POSTGRES_PASSWORD}
+      name_db: ${POSTGRES_DB}
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: ${ALGORITHM}
+      BOT_TOKEN: ${BOT_TOKEN}
+    ports:
+      - "8000:8000"
+    volumes:
+       - ./src:/app/src
+    restart: unless-stopped
+    networks:
+      - my_network
+
+  bot:
+    build: .
+    depends_on:
+      - api
+    container_name: habit_bot
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      host_db: db
+      port_db: 5432
+      user_db: ${POSTGRES_USER}
+      password_db: ${POSTGRES_PASSWORD}
+      name_db: ${POSTGRES_DB}
+      BOT_TOKEN: ${BOT_TOKEN}
+      API_URL: http://api:8000
+    command: python -m src.frontend.bot  # Замените на команду запуска вашего бота
+    restart: unless-stopped
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
