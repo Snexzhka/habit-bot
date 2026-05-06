@@ -365,8 +365,10 @@ async def _get_description(message):
                 error = response.json().get("detail", "Неизвестная ошибка")
                 await bot.send_message(
                     message.chat.id,
-                    f"Ошибка при создании: {error}\nПопробуйте ещё раз.",
+                    f"Ошибка при создании: {error}\nПопробуйте ещё раз."
+
                 )
+                habit_state[message.from_user.id]["stage"] = "waiting_name_of_habit"
                 # Не очищаем состояние — даём пользователю шанс исправить
                 return
 

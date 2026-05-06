@@ -64,16 +64,21 @@ async def create_new_habit(
     telegram_id: int,
     db: AsyncSession,
 ):
-    existing_habit = await get_habit_by_name(db, habit.name)
-    print(habit.name)
-    if existing_habit:
-        raise HTTPException(status_code=400, detail="Такая привычка уже есть")
+    # existing_habit = await get_habit_by_name(db, habit.name)
+    # print(habit.name)
+    # if existing_habit:
+    #     raise HTTPException(status_code=400, detail="Такая привычка уже есть")
 
     user = await db.execute(select(User.id).where(User.telegram_id == telegram_id))
     user_id = user.scalar_one_or_none()
 
-    if user is None:
-        raise HTTPException(status_code=400, detail="Пользватель не найден")
+    if user_id is None:
+        raise HTTPException(status_code=400, detail="Пользователь не найден")
+    existing = await db.execute(
+        select(Habit).where(Habit.user_id == user_id, Habit.name == habit.name)
+    )
+    if existing.scalars().one_or_none():
+        raise HTTPException(status_code=400, detail="Такая привычка уже есть")
 
     new_habit = Habit(
         name=habit.name,
